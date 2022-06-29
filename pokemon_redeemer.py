@@ -14,7 +14,7 @@ print(colorama.Fore.YELLOW + '''
    ___       __                       
   / _ \___  / /_____ __ _  ___  ___   
  / ___/ _ \/  '_/ -_)  ' \/ _ \/ _ \  
-/_/___\___/_/\_\\\\__/_/_/_/\___/_//_/
+/_/  _\___/_/\_\\\\__/_/_/_/\___/_//_/
     / _ \___ ___/ /__ ___ __ _  ___ ____
    / , _/ -_) _  / -_) -_)  ' \/ -_) __/
   /_/|_|\__/\_,_/\__/\__/_/_/_/\__/_/   
@@ -38,15 +38,16 @@ with open(codes_file, "r") as rf:
 
 # let's go
 print(colorama.Fore.BLUE + "[*]" + colorama.Fore.RESET + f" redeeming {str(len(CODES))} codes")
-
-# get login info  
-username = input(colorama.Fore.YELLOW + "[?]" + colorama.Fore.RESET + " username: ")
-password = input(colorama.Fore.YELLOW + "[?]" + colorama.Fore.RESET + " password: ")
-
-wd = webdriver.Firefox()
-
-try:
+wd = None
+try:    
+    # get login info
+    print(colorama.Fore.YELLOW + "[?]" + colorama.Fore.RESET + " username: ", end="")
+    username = input("")
+    print(colorama.Fore.YELLOW + "[?]" + colorama.Fore.RESET + " password: ", end="")
+    password = input("")
+    
     # login
+    wd = webdriver.Firefox()
     wd.get("https://sso.pokemon.com/sso/login?locale=en&service=https://www.pokemon.com/us/pokemon-trainer-club/caslogin")
 
     element = wd.find_element(By.ID, "username")
@@ -60,7 +61,8 @@ try:
 
     # redeem codes
     wd.get("https://www.pokemon.com/us/pokemon-trainer-club/enter-codes")
-    input(colorama.Fore.BLUE + "[*]" + colorama.Fore.RESET + " tell them that you're not a robot and hit enter..")
+    print(colorama.Fore.BLUE + "[*]" + colorama.Fore.RESET + " tell them that you're not a robot and hit enter..", end="")
+    input("")
 
     # submit codes - 10 at a time max
     count = 0    
@@ -90,10 +92,13 @@ try:
     
     # all done
     print(colorama.Fore.BLUE + "[*]" + colorama.Fore.RESET + f" redeemed {str(count)} codes!")
+except KeyboardInterrupt:
+    print(colorama.Fore.RED + "[!]" + colorama.Fore.RESET + f" interrupted")
 except Exception as e:
     print(str(e))
 finally:
     # logout
-    wd.get("https://www.pokemon.com/us/pokemon-trainer-club/logout")
-    wd.close()
-    print(colorama.Fore.BLUE + "[*]" + colorama.Fore.RESET + " logged out")
+    if wd:
+        wd.get("https://www.pokemon.com/us/pokemon-trainer-club/logout")
+        wd.close()
+        print(colorama.Fore.BLUE + "[*]" + colorama.Fore.RESET + " logged out")
